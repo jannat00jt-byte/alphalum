@@ -3,58 +3,14 @@
    Products, Blog, Interactivity
    ============================================ */
 
-// --- Placeholder Image Generator ---
-const catColors = {
-    chargeurs: ["#2563eb", "#1d4ed8"],
-    coques: ["#7c3aed", "#5b21b6"],
-    ecouteurs: ["#059669", "#047857"],
-    protection: ["#d97706", "#b45309"],
-    support: ["#dc2626", "#b91c1c"],
-    stockage: ["#0891b2", "#0e7490"]
-};
-const blogCatColors = {
-    "Chargeurs": ["#2563eb", "#1d4ed8"],
-    "Protection": ["#d97706", "#b45309"],
-    "Écouteurs": ["#059669", "#047857"],
-    "Coques": ["#7c3aed", "#5b21b6"],
-    "Conseils": ["#0891b2", "#0e7490"],
-    "Supports": ["#dc2626", "#b91c1c"],
-    "Stockage": ["#0f766e", "#115e59"],
-    "Accessoires": ["#9333ea", "#7e22ce"],
-    "Tendances": ["#e11d48", "#be123c"]
-};
-
-function svgPlaceholder(icon, label, color1, color2) {
-    const safe = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
-      <defs>
-        <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:${color1}"/>
-          <stop offset="100%" style="stop-color:${color2}"/>
-        </linearGradient>
-        <pattern id="dots" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
-          <circle cx="15" cy="15" r="1" fill="rgba(255,255,255,0.1)"/>
-        </pattern>
-      </defs>
-      <rect width="800" height="500" fill="url(#g)"/>
-      <rect width="800" height="500" fill="url(#dots)"/>
-      <text x="400" y="220" text-anchor="middle" font-size="100">${icon}</text>
-      <text x="400" y="290" text-anchor="middle" font-family="Inter,sans-serif" font-weight="700" font-size="24" fill="rgba(255,255,255,0.95)">${safe(label)}</text>
-      <text x="400" y="320" text-anchor="middle" font-family="Inter,sans-serif" font-size="14" fill="rgba(255,255,255,0.6)">AlphaLum</text>
-    </svg>`;
-    const enc = encodeURIComponent(svg);
-    return 'data:image/svg+xml,' + enc;
-}
-
+// --- Unsplash Images (via picsum.photos) ---
+// Each product & blog post gets a unique real photo from Unsplash
 function productImg(product) {
-    const c = catColors[product.category] || ["#6366f1", "#4338ca"];
-    return svgPlaceholder(product.icon, product.name, c[0], c[1]);
+    return `https://picsum.photos/seed/prod${product.id}/600/400`;
 }
 
 function blogImg(post) {
-    const c = blogCatColors[post.category] || ["#6366f1", "#4338ca"];
-    return svgPlaceholder(post.icon, post.title, c[0], c[1]);
-}
+    return `https://picsum.photos/seed/blog${post.id}/800/450`;
 }
 
 // --- Product Data ---

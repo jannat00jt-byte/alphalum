@@ -3,31 +3,58 @@
    Products, Blog, Interactivity
    ============================================ */
 
-// --- Media Images ---
-const mediaImages = {
-    ecouteurs: "media/Gabba Goods Wireless Over Ear Bluetooth Headphones.jpg",
-    coques: "media/iPhone 17 pro Max pour un autre vision sur le monde.jpg",
-    chargeurs: "media/téléchargement.jpg",
-    protection: "media/téléchargement (1).jpg",
-    support: "media/téléchargement (1).jpg",
-    stockage: "media/téléchargement.jpg",
-    blogDefault: "media/téléchargement (1).jpg"
+// --- Placeholder Image Generator ---
+const catColors = {
+    chargeurs: ["#2563eb", "#1d4ed8"],
+    coques: ["#7c3aed", "#5b21b6"],
+    ecouteurs: ["#059669", "#047857"],
+    protection: ["#d97706", "#b45309"],
+    support: ["#dc2626", "#b91c1c"],
+    stockage: ["#0891b2", "#0e7490"]
+};
+const blogCatColors = {
+    "Chargeurs": ["#2563eb", "#1d4ed8"],
+    "Protection": ["#d97706", "#b45309"],
+    "Écouteurs": ["#059669", "#047857"],
+    "Coques": ["#7c3aed", "#5b21b6"],
+    "Conseils": ["#0891b2", "#0e7490"],
+    "Supports": ["#dc2626", "#b91c1c"],
+    "Stockage": ["#0f766e", "#115e59"],
+    "Accessoires": ["#9333ea", "#7e22ce"],
+    "Tendances": ["#e11d48", "#be123c"]
 };
 
-function blogImage(post) {
-    const catMap = {
-        "Écouteurs": mediaImages.ecouteurs,
-        "Coques": mediaImages.coques,
-        "Chargeurs": mediaImages.chargeurs,
-        "Protection": mediaImages.protection,
-        "Supports": mediaImages.support,
-        "Stockage": mediaImages.stockage
-    };
-    return catMap[post.category] || `https://picsum.photos/seed/${post.slug}/600/300`;
+function svgPlaceholder(icon, label, color1, color2) {
+    const safe = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="500" viewBox="0 0 800 500">
+      <defs>
+        <linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:${color1}"/>
+          <stop offset="100%" style="stop-color:${color2}"/>
+        </linearGradient>
+        <pattern id="dots" x="0" y="0" width="30" height="30" patternUnits="userSpaceOnUse">
+          <circle cx="15" cy="15" r="1" fill="rgba(255,255,255,0.1)"/>
+        </pattern>
+      </defs>
+      <rect width="800" height="500" fill="url(#g)"/>
+      <rect width="800" height="500" fill="url(#dots)"/>
+      <text x="400" y="220" text-anchor="middle" font-size="100">${icon}</text>
+      <text x="400" y="290" text-anchor="middle" font-family="Inter,sans-serif" font-weight="700" font-size="24" fill="rgba(255,255,255,0.95)">${safe(label)}</text>
+      <text x="400" y="320" text-anchor="middle" font-family="Inter,sans-serif" font-size="14" fill="rgba(255,255,255,0.6)">AlphaLum</text>
+    </svg>`;
+    const enc = encodeURIComponent(svg);
+    return 'data:image/svg+xml,' + enc;
 }
 
-function productImage(category) {
-    return mediaImages[category] || mediaImages.blogDefault;
+function productImg(product) {
+    const c = catColors[product.category] || ["#6366f1", "#4338ca"];
+    return svgPlaceholder(product.icon, product.name, c[0], c[1]);
+}
+
+function blogImg(post) {
+    const c = blogCatColors[post.category] || ["#6366f1", "#4338ca"];
+    return svgPlaceholder(post.icon, post.title, c[0], c[1]);
+}
 }
 
 // --- Product Data ---
@@ -69,7 +96,6 @@ const blogPosts = [
         readTime: "7 min",
         icon: "⚡",
         color: "#dbeafe",
-        image: "https://picsum.photos/seed/chargeur/600/300",
         excerpt: "Découvrez les meilleurs chargeurs rapides pour votre téléphone en 2026. Comparatif GaN, USB-C et sans fil.",
         author: "AlphaLum",
         content: `
@@ -886,7 +912,7 @@ function renderProducts() {
     if (!grid) return;
     grid.innerHTML = products.slice(0, visibleProducts).map(p => `
         <div class="product-card" data-category="${p.category}">
-            <div class="product-image" style="background-image:url('${productImage(p.category)}');background-size:cover;background-position:center;">
+            <div class="product-image" style="background-image:url('${productImg(p)}');background-size:cover;background-position:center;">
                 ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}
             </div>
             <div class="product-info">
@@ -936,7 +962,7 @@ function renderBlogPreview() {
     if (!grid) return;
     grid.innerHTML = blogPosts.slice(0, 3).map(post => `
         <div class="blog-preview-card">
-            <div class="blog-thumb" style="background-image: url('${blogImage(post)}'); background-size: cover; background-position: center;">
+            <div class="blog-thumb" style="background-image: url('${blogImg(post)}'); background-size: cover; background-position: center;">
             </div>
             <div class="blog-content">
                 <span class="blog-date">${post.date} · ${post.readTime} de lecture</span>
@@ -955,7 +981,7 @@ function renderBlogPosts(filter = 'all') {
     const filtered = filter === 'all' ? blogPosts : blogPosts.filter(p => p.category === filter);
     grid.innerHTML = filtered.map(post => `
         <article class="blog-card">
-            <div class="blog-card-image" style="background-image: url('${blogImage(post)}'); background-size: cover; background-position: center;">
+            <div class="blog-card-image" style="background-image: url('${blogImg(post)}'); background-size: cover; background-position: center;">
                 ${post.icon}
                 <span class="blog-cat-badge">${post.category}</span>
             </div>
@@ -1001,7 +1027,7 @@ function loadArticle() {
     document.getElementById('articleDate').textContent = post.date;
     document.getElementById('articleReadTime').textContent = post.readTime;
     document.getElementById('articleContent').innerHTML = `
-        <img src="${blogImage(post)}" alt="${post.title}" style="width:100%;border-radius:12px;margin-bottom:32px;object-fit:cover;max-height:400px;">
+        <img src="${blogImg(post)}" alt="${post.title}" style="width:100%;border-radius:12px;margin-bottom:32px;object-fit:cover;max-height:400px;">
         ${post.content}
     `;
 
@@ -1011,7 +1037,7 @@ function loadArticle() {
     if (relatedGrid) {
         relatedGrid.innerHTML = related.map(p => `
             <a href="article.html?id=${p.id}" class="related-card">
-                <div style="height:100px;border-radius:8px;margin-bottom:10px;background-image:url('${blogImage(p)}');background-size:cover;background-position:center;"></div>
+                <div style="height:100px;border-radius:8px;margin-bottom:10px;background-image:url('${blogImg(p)}');background-size:cover;background-position:center;"></div>
                 <h4>${p.title}</h4>
                 <p>${p.excerpt.substring(0, 80)}...</p>
             </a>

@@ -3,6 +3,33 @@
    Products, Blog, Interactivity
    ============================================ */
 
+// --- Media Images ---
+const mediaImages = {
+    ecouteurs: "media/Gabba Goods Wireless Over Ear Bluetooth Headphones.jpg",
+    coques: "media/iPhone 17 pro Max pour un autre vision sur le monde.jpg",
+    chargeurs: "media/téléchargement.jpg",
+    protection: "media/téléchargement (1).jpg",
+    support: "media/téléchargement (1).jpg",
+    stockage: "media/téléchargement.jpg",
+    blogDefault: "media/téléchargement (1).jpg"
+};
+
+function blogImage(post) {
+    const catMap = {
+        "Écouteurs": mediaImages.ecouteurs,
+        "Coques": mediaImages.coques,
+        "Chargeurs": mediaImages.chargeurs,
+        "Protection": mediaImages.protection,
+        "Supports": mediaImages.support,
+        "Stockage": mediaImages.stockage
+    };
+    return catMap[post.category] || `https://picsum.photos/seed/${post.slug}/600/300`;
+}
+
+function productImage(category) {
+    return mediaImages[category] || mediaImages.blogDefault;
+}
+
 // --- Product Data ---
 const products = [
     { id: 1, name: "Chargeur Rapide USB-C 65W GaN", category: "chargeurs", price: 199, oldPrice: 299, icon: "⚡", badge: "-33%", rating: 4.9, reviews: 234, desc: "Chargeur compact GaN 65W pour laptop et téléphone" },
@@ -859,9 +886,8 @@ function renderProducts() {
     if (!grid) return;
     grid.innerHTML = products.slice(0, visibleProducts).map(p => `
         <div class="product-card" data-category="${p.category}">
-            <div class="product-image">
+            <div class="product-image" style="background-image:url('${productImage(p.category)}');background-size:cover;background-position:center;">
                 ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}
-                <span class="prod-icon">${p.icon}</span>
             </div>
             <div class="product-info">
                 <span class="product-category">${p.category}</span>
@@ -910,7 +936,7 @@ function renderBlogPreview() {
     if (!grid) return;
     grid.innerHTML = blogPosts.slice(0, 3).map(post => `
         <div class="blog-preview-card">
-            <div class="blog-thumb" style="background-image: url('https://picsum.photos/seed/${post.slug}/600/300'); background-size: cover; background-position: center;">
+            <div class="blog-thumb" style="background-image: url('${blogImage(post)}'); background-size: cover; background-position: center;">
             </div>
             <div class="blog-content">
                 <span class="blog-date">${post.date} · ${post.readTime} de lecture</span>
@@ -929,7 +955,7 @@ function renderBlogPosts(filter = 'all') {
     const filtered = filter === 'all' ? blogPosts : blogPosts.filter(p => p.category === filter);
     grid.innerHTML = filtered.map(post => `
         <article class="blog-card">
-            <div class="blog-card-image" style="background-image: url('https://picsum.photos/seed/${post.slug}/600/300'); background-size: cover; background-position: center;">
+            <div class="blog-card-image" style="background-image: url('${blogImage(post)}'); background-size: cover; background-position: center;">
                 ${post.icon}
                 <span class="blog-cat-badge">${post.category}</span>
             </div>
@@ -975,7 +1001,7 @@ function loadArticle() {
     document.getElementById('articleDate').textContent = post.date;
     document.getElementById('articleReadTime').textContent = post.readTime;
     document.getElementById('articleContent').innerHTML = `
-        <img src="https://picsum.photos/seed/${post.slug}/800/400" alt="${post.title}" style="width:100%;border-radius:12px;margin-bottom:32px;object-fit:cover;">
+        <img src="${blogImage(post)}" alt="${post.title}" style="width:100%;border-radius:12px;margin-bottom:32px;object-fit:cover;max-height:400px;">
         ${post.content}
     `;
 
@@ -985,7 +1011,7 @@ function loadArticle() {
     if (relatedGrid) {
         relatedGrid.innerHTML = related.map(p => `
             <a href="article.html?id=${p.id}" class="related-card">
-                <div style="height:100px;border-radius:8px;margin-bottom:10px;background-image:url('https://picsum.photos/seed/${p.slug}/400/200');background-size:cover;background-position:center;"></div>
+                <div style="height:100px;border-radius:8px;margin-bottom:10px;background-image:url('${blogImage(p)}');background-size:cover;background-position:center;"></div>
                 <h4>${p.title}</h4>
                 <p>${p.excerpt.substring(0, 80)}...</p>
             </a>
